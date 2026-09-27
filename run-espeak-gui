@@ -1,0 +1,73 @@
+#!/usr/bin/env bash
+
+set -u
+
+cd -- "$(dirname -- "$0")" || exit 1
+
+missing=()
+if ! command -v python3 >/dev/null 2>&1; then
+    missing+=(python3)
+else
+    python3 -c 'import tkinter' >/dev/null 2>&1 || missing+=(tkinter)
+fi
+command -v espeak-ng >/dev/null 2>&1 || missing+=(espeak-ng)
+command -v ffmpeg >/dev/null 2>&1 || missing+=(ffmpeg)
+
+if ((${#missing[@]})); then
+    packages=()
+    if command -v apt-get >/dev/null 2>&1; then
+        for dependency in "${missing[@]}"; do
+            case "$dependency" in
+                python3) packages+=(python3) ;;
+                tkinter) packages+=(python3-tk) ;;
+                espeak-ng) packages+=(espeak-ng) ;;
+                ffmpeg) packages+=(ffmpeg) ;;
+            esac
+        done
+        install_command="sudo apt-get update && sudo apt-get install ${packages[*]}"
+    elif command -v dnf >/dev/null 2>&1; then
+        for dependency in "${missing[@]}"; do
+            case "$dependency" in
+                python3) packages+=(python3) ;;
+                tkinter) packages+=(python3-tkinter) ;;
+                espeak-ng) packages+=(espeak-ng) ;;
+                ffmpeg) packages+=(ffmpeg-free) ;;
+            esac
+        done
+        install_command="sudo dnf install ${packages[*]}"
+    elif command -v pacman >/dev/null 2>&1; then
+        for dependency in "${missing[@]}"; do
+            case "$dependency" in
+                python3) packages+=(python) ;;
+                tkinter) packages+=(tk) ;;
+                espeak-ng) packages+=(espeak-ng) ;;
+                ffmpeg) packages+=(ffmpeg) ;;
+            esac
+        done
+        install_command="sudo pacman -S ${packages[*]}"
+    elif command -v zypper >/dev/null 2>&1; then
+        for dependency in "${missing[@]}"; do
+            case "$dependency" in
+                python3) packages+=(python3) ;;
+                tkinter) packages+=(python3-tk) ;;
+                espeak-ng) packages+=(espeak-ng) ;;
+                ffmpeg) packages+=(ffmpeg) ;;
+            esac
+        done
+        install_command="sudo zypper install ${packages[*]}"
+    else
+        install_command="Install these packages with your system package manager: ${missing[*]}"
+    fi
+
+    echo "eSpeak NG Studio needs: ${missing[*]}"
+    echo
+    echo "Please install them with:"
+    echo "  $install_command"
+    echo
+    if [[ -t 0 ]]; then
+        read -r -p "Press Enter to close..." || true
+    fi
+    exit 1
+fi
+
+exec python3 espeak_gui.py
