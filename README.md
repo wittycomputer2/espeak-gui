@@ -31,10 +31,12 @@ typical Linux system).
 
 ## Voices
 
-- English: American or British
+- English: American (`en-us`) or British (`en`)
 - Spanish: Mexican or Spain
 - French, Japanese, and Portuguese: one regional setting each
-- Male and female eSpeak voice variants are available for every language
+- Male and female eSpeak voice variants are available for every language. The
+  female profile uses eSpeak NG's `f2` variant and a calibrated pitch range so
+  it remains recognizably female when the accent or pitch is changed.
 
 Voice quality and pronunciation depend on the voices included with the installed
 version of eSpeak NG.
